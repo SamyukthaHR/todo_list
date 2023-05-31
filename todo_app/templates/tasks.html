@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block style %}
+  <style>
+  .card {
+
+   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.5), 0 6px 20px 0 rgba(0,0,0,0.39);
+   background: url("/static/todo_bg_2.jpg");
+   margin-bottom : 5%;
+   border-radius: 25px;
+   padding : 2%;
+   overflow: auto;
+   resize: both;
+   text-overflow: ellipsis;
+   text-align: center;
+  }
+
+  .card .content {
+  position : relative;
+  text-align : left;
+  visibility : hidden;
+  opacity : 0;
+  transition : 0.3s ease-in-out;
+  }
+
+
+  .card:hover .content {
+  visibility: visible;
+  opacity: 1;
+  transition-delay: 0.2s;
+  text-align: left;
+  }
+
+  .submit_form {
+                  text-align: center;
+                  padding: 3%;
+                  background-image: url("../todo_bg_2.jpg");
+                  border-radius: 25px;
+                  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.4), 0 6px 20px 0 rgba(0,0,0,0.36);
+  }
+  </style>
+{% endblock style %}
+{% block content %}
+
+{% if messages %}
+  {% for message in messages %}
+  <div class="alert alert-info">
+    <strong>{{message}}</strong>
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  <center class="row">
+    <h1><i>__TODO LIST__</i></h1>
+    <hr />
+  </center>
+
+  <div class="row">
+
+    <div class="col-md-8">
+        {% if todo_list %}
+            {% for i in todo_list %}
+                <div class="card">
+                    <form action="/form/{{i.id}}" method="GET" style=" padding-right: 4%; padding-top: 3%;">
+                        <button value="edit" type="submit"  class="btn btn-primary" style="float: right;"><span class="glyphicon glyphicon-edit"></span>  Edit</button>
+                    </form>
+                    <h2><b>{{i.id}}.  {{i.title}}</b></h2>
+                    <div class="content">
+                        <h3><b>Description: </b> {{i.description }}</h3>
+                        <h3><b>Due date: </b> {{i.due_date }}</h3>
+                        <h3><b>Status: </b> {{i.status }}</h3>
+                    </div>
+                    <form action="/tasks/{{i.id}}/2" method="GET" style=" padding-right: 4%; padding-bottom: 3%;">
+          {% csrf_token %}
+          <button value="delete" type="submit"  class="btn btn-primary" style="float: right; background-colour=red"><span class="glyphicon glyphicon-trash"></span>  Delete</button>
+        </form>
+      </div>
+            {% endfor%}
+
+        {% else %}
+            <h3><i>You have no tasks !!</i></h3>
+            <div class="col-md-3" >
+                <div class="card">
+                    <div  class="submit_form">
+      <form  method="POST">
+        {% csrf_token %}
+        {{forms.as_p}}
+        <center>
+        <input type="submit" class="btn btn-default" value="submit" />
+      </center>
+      </form>
+    </div>
+                </div>
+
+  </div>
+        {% endif %}
+        <div class="col-md-3" >
+
+  </div>
+    </div>
+    <div class="col-md-1"> </div>
+
+</div>
+{% endblock %}
