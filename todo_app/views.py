@@ -37,7 +37,7 @@ class TaskListView(generics.ListCreateAPIView):
         page = int(query_params.get('page', 1))
         limit = int(query_params.get('limit', 3))
         size = 3
-        offset = (page - 1 + size) % size
+        offset = (page - 1) * size
         if query_params and all_tasks and page > 0 and limit < size:
             all_tasks = all_tasks[offset: offset + limit]
         form = TaskForm()
