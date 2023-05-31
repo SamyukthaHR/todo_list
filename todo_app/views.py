@@ -32,6 +32,14 @@ class TaskListView(generics.ListCreateAPIView):
 
     def get(self, request, *args, **kwargs):
         all_tasks = Tasks.objects.filter(is_deleted=False)
+        query_params = request.GET.dict()
+        print(query_params)
+        page = int(query_params.get('page', 1))
+        limit = int(query_params.get('limit', 3))
+        size = 3
+        offset = (page - 1 + size) % size
+        if query_params and all_tasks and page > 0 and limit < size:
+            all_tasks = all_tasks[offset: offset + limit]
         form = TaskForm()
         context = {'todo_list': all_tasks, "forms": form}
         return render(request, 'tasks.html', context)
@@ -46,7 +54,6 @@ class TaskListView(generics.ListCreateAPIView):
             title = form.cleaned_data.get('title')
             description = form.cleaned_data.get('description')
             due_date = form.cleaned_data.get('due_date')
-            form.save()
             new_task = Tasks(title=title, description=description, due_date=due_date)
             new_task.save()
             context = {
@@ -69,7 +76,7 @@ class SingleTaskView(generics.RetrieveUpdateDestroyAPIView):
         if kwargs.get('func') == 1:
             return self.put(request, *args, **kwargs)
         if kwargs.get('func') == 2:
-            return self.delete(request,*args, **kwargs)
+            return self.delete(request, *args, **kwargs)
         try:
             task = Tasks.objects.filter(is_deleted=False).get(id=kwargs.get('id'))
             return render(request, 'tasks.html', {'todo_list': [task]})
